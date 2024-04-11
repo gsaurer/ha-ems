@@ -1,0 +1,429 @@
+- id: '1672345925640'
+  alias: "[EMS] - [Car] - Check charging for Trip in calendar"
+  description: ""
+  trigger:
+    - platform: time_pattern
+      minutes: /10
+  condition:
+    - condition: state
+      entity_id: input_boolean.ems_status
+      state: "on"
+    - condition: template
+      value_template: "{{ states('input_select.ems_car_charging_type') != \"Trip\" }}"
+      alias: Check if Trip is already on
+    - condition: state
+      entity_id: binary_sensor.go_echarger_207138_car
+      state: "on"
+  action:
+    - service: calendar.get_events
+      target:
+        entity_id: calendar.my_calendar
+      data:
+        duration:
+          hours: 24
+          minutes: 0
+          seconds: 0
+      response_variable: events
+    - repeat:
+        sequence:
+          - if:
+              - condition: template
+                value_template: " {{ 'Charging' in repeat.item['summary'] }}"
+            then:
+              - variables:
+                  chargingPercentPerHour: >-
+                    {{ 100 /
+                    (states('input_number.ems_car_battery_power_max')
+                    | int / 11) }}
+                  chargingPercentMissing: >-
+                    {{states('input_number.ems_car_battery_percentage_trip')|float
+                    - states('sensor.car_battery')|float(100) }}
+                  minToFinish: >-
+                    {{ ((chargingPercentMissing / chargingPercentPerHour) * 60) |
+                    int }}
+                  timeToStart: >-
+                    {{ repeat.item['start']|as_datetime - timedelta( minutes =
+                    minToFinish+15) }}
+              - if:
+                  - condition: template
+                    value_template: >-
+                      {{ timeToStart|as_datetime < now() + timedelta( minutes =
+                      10) }}
+                then:
+                  - service: input_select.select_option
+                    metadata: {}
+                    data:
+                      option: Trip
+                    target:
+                      entity_id: input_select.ems_car_charging_type
+                    enabled: false
+                  - service: notify.signal_me
+                    data:
+                      title: "[EMS] - Trip - Charging"
+                      message: >-
+                        Changed Charging to load for Trip {{
+                        repeat.item['summary'] }} at {{
+                        repeat.item['start']|as_datetime|
+                        timestamp_custom('%H:%M') }}. Current battery state is {{
+                        states('sensor.car_battery') }}%. {{
+                        chargingPercentMissing }}% will be charged in {{
+                        minToFinish }} minutes.
+        for_each: "{{ events['calendar.my_calendar'].events }}"
+  mode: single
+- id: '1672345925641'
+  alias: "[EMS] - [Car] - Reset charging type after disconnect"
+  description: ""
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.go_echarger_207138_car
+      from: "on"
+      to: "off"
+  condition:
+    - condition: state
+      entity_id: input_boolean.ems_status
+      state: "on"
+  action:
+    - service: input_select.select_option
+      metadata: {}
+      data:
+        option: Surplus
+      target:
+        entity_id: input_select.ems_car_charging_type
+      enabled: true
+  mode: single
+- id: '1672345925642'
+  alias: "[EMS] - [Car] - Update go-e charging settings"
+  description: ""
+  trigger:
+    - platform: time_pattern
+      seconds: /5
+  condition:
+    - condition: state
+      entity_id: input_boolean.ems_status
+      state: "on"
+    - condition: state
+      entity_id: binary_sensor.go_echarger_207138_car
+      state: "on"
+  action:
+    - variables:
+        pGrid: >-
+          {{ - (states('sensor.ems_car_potential_power_mean') | int(0) +
+          states('input_number.ems_car_max_power_from_grid_for_surplus_charging')
+          | int(0))}}
+        minpGridExport: >-
+          {{
+          states('input_number.ems_car_min_power_export_for_surplus_charging')
+          }}
+        amp: "{{ [[ (pGrid * -1) // 230, 6] | max, 16] | min }}"
+    - service: mqtt.publish
+      data:
+        qos: "0"
+        retain: false
+        topic: go-eCharger/207138/ids/set
+        payload: >-
+          {{'{"pGrid": '}}{{ pGrid }}, {{'"pPv": '}}{{(int(0))}}, {{'"pAkku":
+          '}}{{(int(0))}}}
+      alias: Send mqtt pGrid information
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_select.ems_car_charging_type
+              state: Default
+          sequence:
+            - alias: Check for Single phase
+              if:
+                - condition: device
+                  type: is_on
+                  device_id: 3f7d12fdee2c1caf984b8820aed17427
+                  entity_id: 7f0720b1a6bce9629957430c34e4ea58
+                  domain: switch
+              then:
+                - type: turn_off
+                  device_id: 3f7d12fdee2c1caf984b8820aed17427
+                  entity_id: 7f0720b1a6bce9629957430c34e4ea58
+                  domain: switch
+        - conditions:
+            - condition: state
+              entity_id: input_select.ems_car_charging_type
+              state: Surplus
+          sequence:
+            - choose:
+                - conditions:
+                    - condition: and
+                      conditions:
+                        - condition: numeric_state
+                          entity_id: sensor.car_battery
+                          above: 0
+                          below: input_number.ems_car_min_morning_battery
+                        - condition: time
+                          after: "21:00:00"
+                          before: "05:00:00"
+                      alias: "Morning minimum "
+                  sequence:
+                    - alias: Check for Single phase
+                      if:
+                        - condition: device
+                          type: is_on
+                          device_id: 3f7d12fdee2c1caf984b8820aed17427
+                          entity_id: 7f0720b1a6bce9629957430c34e4ea58
+                          domain: switch
+                      then:
+                        - type: turn_off
+                          device_id: 3f7d12fdee2c1caf984b8820aed17427
+                          entity_id: 7f0720b1a6bce9629957430c34e4ea58
+                          domain: switch
+                    - variables:
+                        amp: "16"
+                    - if:
+                        - condition: or
+                          conditions:
+                            - condition: numeric_state
+                              entity_id: sensor.ems_car_potential_power_mean
+                              value_template: "{{ amp }}"
+                              above: number.go_echarger_207138_amp
+                            - condition: numeric_state
+                              entity_id: sensor.ems_car_potential_power_mean
+                              value_template: "{{ amp }}"
+                              below: number.go_echarger_207138_amp
+                      then:
+                        - service: mqtt.publish
+                          data:
+                            qos: "0"
+                            retain: false
+                            topic: go-eCharger/207138/amp/set
+                            payload: "{{ amp }}"
+                          alias: Set amp
+                      alias: Adopt amp (A) as charger does not do it
+                      enabled: true
+                    - if:
+                        - condition: and
+                          conditions:
+                            - condition: device
+                              device_id: 3f7d12fdee2c1caf984b8820aed17427
+                              domain: select
+                              entity_id: 3894888db4550a8650d06e383d3492c6
+                              type: selected_option
+                              option: Don't charge
+                              alias: Current Force state stopped
+                          alias: Needs to be start?
+                      then:
+                        - device_id: 3f7d12fdee2c1caf984b8820aed17427
+                          domain: select
+                          entity_id: 3894888db4550a8650d06e383d3492c6
+                          type: select_option
+                          option: Charge
+                          alias: Force Start charging
+                      else: []
+                      alias: Start charging if needed
+                      enabled: true
+              default:
+                - if:
+                    - condition: device
+                      type: is_off
+                      device_id: 3f7d12fdee2c1caf984b8820aed17427
+                      entity_id: 7f0720b1a6bce9629957430c34e4ea58
+                      domain: switch
+                  then:
+                    - type: turn_on
+                      device_id: 3f7d12fdee2c1caf984b8820aed17427
+                      entity_id: 7f0720b1a6bce9629957430c34e4ea58
+                      domain: switch
+                  alias: Check for Single phase
+                - if:
+                    - condition: or
+                      conditions:
+                        - condition: numeric_state
+                          entity_id: sensor.ems_car_potential_power_mean
+                          value_template: "{{ amp }}"
+                          above: number.go_echarger_207138_amp
+                        - condition: numeric_state
+                          entity_id: sensor.ems_car_potential_power_mean
+                          value_template: "{{ amp }}"
+                          below: number.go_echarger_207138_amp
+                  then:
+                    - service: mqtt.publish
+                      data:
+                        qos: "0"
+                        retain: false
+                        topic: go-eCharger/207138/amp/set
+                        payload: "{{ amp }}"
+                      alias: Set amp
+                  alias: Adopt amp (A) as charger does not do it
+                  enabled: true
+                - if:
+                    - condition: and
+                      conditions:
+                        - condition: template
+                          value_template: "{{ pGrid * -1 < minpGridExport }}"
+                          alias: Below minpGridExport
+                        - condition: or
+                          conditions:
+                            - condition: device
+                              device_id: 3f7d12fdee2c1caf984b8820aed17427
+                              domain: select
+                              entity_id: 3894888db4550a8650d06e383d3492c6
+                              type: selected_option
+                              option: Neutral
+                              alias: Current Force state neutral
+                            - condition: device
+                              device_id: 3f7d12fdee2c1caf984b8820aed17427
+                              domain: select
+                              entity_id: 3894888db4550a8650d06e383d3492c6
+                              type: selected_option
+                              option: Charge
+                              alias: Current Force state charging
+                          alias: Test State not stopped
+                      alias: Needs to be stopped?
+                  then:
+                    - device_id: 3f7d12fdee2c1caf984b8820aed17427
+                      domain: select
+                      entity_id: 3894888db4550a8650d06e383d3492c6
+                      type: select_option
+                      option: Don't charge
+                      alias: Force Stop charging
+                  else: []
+                  alias: Stop charging below minpGridExport
+                  enabled: true
+                - if:
+                    - condition: and
+                      conditions:
+                        - condition: template
+                          value_template: "{{ pGrid * -1 > minpGridExport }}"
+                          alias: Above minpGridExport
+                        - condition: device
+                          device_id: 3f7d12fdee2c1caf984b8820aed17427
+                          domain: select
+                          entity_id: 3894888db4550a8650d06e383d3492c6
+                          type: selected_option
+                          option: Don't charge
+                          alias: Current Force state stopped
+                      alias: Needs to be start?
+                  then:
+                    - device_id: 3f7d12fdee2c1caf984b8820aed17427
+                      domain: select
+                      entity_id: 3894888db4550a8650d06e383d3492c6
+                      type: select_option
+                      option: Neutral
+                      alias: Force Start charging
+                  else: []
+                  alias: Start charging above minpGridExport
+                  enabled: true
+        - conditions:
+            - condition: state
+              entity_id: input_select.ems_car_charging_type
+              state: Trip
+          sequence:
+            - alias: Check for Single phase
+              if:
+                - condition: device
+                  type: is_on
+                  device_id: 3f7d12fdee2c1caf984b8820aed17427
+                  entity_id: 7f0720b1a6bce9629957430c34e4ea58
+                  domain: switch
+              then:
+                - type: turn_off
+                  device_id: 3f7d12fdee2c1caf984b8820aed17427
+                  entity_id: 7f0720b1a6bce9629957430c34e4ea58
+                  domain: switch
+        - conditions:
+            - condition: state
+              entity_id: input_select.ems_car_charging_type
+              state: Stop
+          sequence: []
+  mode: single
+- id: '1672345925643'
+  alias: "[EMS] - [Car] - Update settings based on charging type selected"
+  description: Updates the loading settings on charger and car based on the type selected
+  trigger:
+    - platform: state
+      entity_id:
+        - input_select.ems_car_charging_type
+    - platform: time
+      at: "06:00:00"
+  condition:
+    - condition: state
+      entity_id: input_boolean.ems_status
+      state: "on"
+  action:
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_select.ems_car_charging_type
+              state: Default
+          sequence:
+            - service: scene.turn_on
+              target:
+                entity_id: scene.ems_car_surplus_duplicate
+              metadata: {}
+            - device_id: 3f7d12fdee2c1caf984b8820aed17427
+              domain: number
+              entity_id: 4fbce01e63454e467e7bf8285480ef31
+              type: set_value
+              value: 14
+            - service: number.set_value
+              metadata: {}
+              data:
+                value: >-
+                  {{
+                  states('input_number.ems_car_battery_percentage_default')|int(0)
+                  }}
+              target:
+                entity_id: number.car_charge_limit
+        - conditions:
+            - condition: state
+              entity_id: input_select.ems_car_charging_type
+              state: Surplus
+          sequence:
+            - service: scene.turn_on
+              target:
+                entity_id: scene.ems_car_surplus
+              metadata: {}
+            - device_id: 3f7d12fdee2c1caf984b8820aed17427
+              domain: number
+              entity_id: 4fbce01e63454e467e7bf8285480ef31
+              type: set_value
+              value: 6
+            - service: number.set_value
+              metadata: {}
+              data:
+                value: >-
+                  {{
+                  states('input_number.ems_car_battery_percentage_default')|int(0)
+                  }}
+              target:
+                entity_id: number.car_charge_limit
+        - conditions:
+            - condition: state
+              entity_id: input_select.ems_car_charging_type
+              state: Trip
+          sequence:
+            - service: scene.turn_on
+              target:
+                entity_id: scene.ems_car_surplus_duplicate
+              metadata: {}
+            - device_id: 3f7d12fdee2c1caf984b8820aed17427
+              domain: number
+              entity_id: 4fbce01e63454e467e7bf8285480ef31
+              type: set_value
+              value: 16
+            - service: number.set_value
+              metadata: {}
+              data:
+                value: >-
+                  {{
+                  states('input_number.ems_car_battery_percentage_trip')|int(0)
+                  }}
+              target:
+                entity_id: number.car_charge_limit
+        - conditions:
+            - condition: state
+              entity_id: input_select.ems_car_charging_type
+              state: Stop
+          sequence:
+            - service: scene.turn_on
+              target:
+                entity_id: scene.ems_car_stop
+              metadata: {}
+  mode: single
+
