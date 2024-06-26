@@ -1,14 +1,14 @@
 
 blueprint:
   name: "[EMS] - [Car] - Charging automation - Type changed"
-  description: Test @@@@
+  description: This automation adopts the settings of the go-e charger accordingly after a specific charging type has been selected. Supported Types are (Default, Surpluse, Trip and Stop)
   domain: automation
   source_url: https://github.com/gsaurer/ha-ems/blob/main/blueprints/EMS-Car-Charging-TypeChanged.yaml
   input:
     #general settings
     ems_enabled:
       name: EMS - Enabled
-      description: Switch that defines if the Energy Managment system should be turned on. It's the main switch for your EMS systm. If you don't have one create a new one directly in the blueprint. Turning it off this will disable this automation.
+      description: Switch that defines if the Energy Managment system should be turned on. It's the main switch for your EMS system. Turning this switch off will disable this automation.
       selector:
         entity:
           domain: input_boolean
@@ -31,7 +31,7 @@ blueprint:
             - domain: sensor
     ems_car_battery_percentage_charging_limit:
       name: Car - Battery percentage charging limit
-      description: The entity that can set the battery charging limit
+      description: The entity that defines the the battery charging limit
       selector:
         entity:
           filter:
