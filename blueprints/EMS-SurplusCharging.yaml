@@ -112,7 +112,7 @@ action:
       maxCurrentToCharge: >-
         {{ 16 }}
       powerAvailable: >-
-        {{ ems_surplus_potential_power_mean | int(0) + ems_surplus_max_power_from_grid | int(0) }}
+        {{ states(ems_surplus_potential_power_mean) | int(0) + ems_surplus_max_power_from_grid | int(0)) }}
       minPowerToCharge: >-
         {{ ems_surplus_min_power_available }}
       currentAvailable: >-
