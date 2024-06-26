@@ -1,1 +1,213 @@
 
+blueprint:
+  name: "[EMS] - [Car] - Charging automation - Surplus"
+  description: This script provides 3 different types of chaging (Default, Trip & Surplus) and adopts the settings of the charger settings accordingly. In this scenario the go-e Charger was used but the automation can be used for other chargers asw well as it is generic.
+  domain: automation
+  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/blob/main/blueprints/EMS/EMS-Car-Charging-Surplus.yaml
+  input:
+    #general settings
+    ems_enabled:
+      name: EMS - Enabled
+      description: Switch that defines if the Energy Managment system should be turned on. It's the main switch for your EMS systm. If you don't have one create a new one directly in the blueprint. Turning it off this will disable this automation.
+      selector:
+        entity:
+          domain: input_boolean
+    ems_charging_type:
+      name: Charging type
+      description: This defines which type of charging should be used - Potential values of this entity are (Default, Surplus, Trip, Stop). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: input_select
+
+    #charger settings
+    ems_charger_phases:
+      name: Charger - Phase switch mode
+      description: Defines if the charger is using single phase for charging. At the moment only Single phase is supported for Surplus but it will set it back to 3-phase charging for other Types (e.g. Default & Trip)
+      selector:
+        entity:
+          filter:
+            - domain: select
+    ems_charger_current:
+      name: Charger - Requested current
+      description: The current value of the charger
+      selector:
+        entity:
+          filter:
+            - domain: number
+    ems_charger_forced_state:
+      name: Charger - Forced state
+      description: Defines the forced state of the charger - wether it is Neutral or it should start charging.
+      selector:
+        entity:
+          filter:
+            - domain: select
+    ems_charger_id:
+      name: go-e Charger id
+      description: The go-e charger id that is used for the mqtt publishing.
+      selector:
+        number:
+
+    #surplus settings
+    ems_surplus_potential_power_mean:
+      name: Surplus - potential power (mean)
+      description: Defines the potential power that is available for car charging. For that create a helper sensor that calculates the value based on your Perference. It is  recommended to leverage the ha-average  integration and create an average value (5min) for the current avaialble energy to smooth peaks.
+      selector:
+        entity:
+          domain: sensor
+    ems_surplus_max_power_from_grid:
+      name: Surplus - Max power from grid
+      description: Defines how much power should be used from the grid for surplus charging at a maximum. Best practice is to set it to ~50 W to smooth the charging
+      default: 50
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: W
+    ems_surplus_min_power_available:
+      name: Surplus - Min power available to start
+      description: Defines the minimum power that needs to be avaialble to start the surplus charging. This depends on your car what is the minimum charging W it can use as well as how much you want to charge using the grid. If your car can start with 6A set it to 1000 W (start a bit earlier instead of 1380W)
+      default: 1000
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: W
+
+    # car settings
+    ems_car_battery_percentage_now:
+      name: Car - Battery percentage
+      description: The current battery level of the car
+      selector:
+        entity:
+          filter:
+            - device_class: battery
+            - domain: sensor
+    ems_car_min_morning_battery:
+      name: Car - Minimum morning battery percentage
+      description: The minimum battery percentage in the morning to start the day. If the battery is below this value the automation will make sure the battery has at lest the % configured here in the morning even the setting is set to surplus charging.
+      default: 15
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+
+variables:
+  ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
+  ems_surplus_max_power_from_grid: !input ems_surplus_max_power_from_grid
+  ems_surplus_min_power_available: !input ems_surplus_min_power_available
+  ems_charger_id: !input ems_charger_id
+
+trigger:
+  - platform: time_pattern
+    seconds: /5
+condition:
+  - condition: state
+    entity_id: !input ems_enabled
+    state: "on"
+  - condition: state
+    entity_id: !input ems_charging_type
+    state: Surplus
+action:
+  - variables:
+      minCurrentToCharge: >-
+        {{ 6 }}
+      maxCurrentToCharge: >-
+        {{ 16 }}
+      powerAvailable: >-
+        {{ states(ems_surplus_potential_power_mean) | int(0) + ems_surplus_max_power_from_grid | int(0) }}
+      minPowerToCharge: >-
+        {{ ems_surplus_min_power_available }}
+      currentAvailable: >-
+        {{ [[ (powerAvailable) // 230, minCurrentToCharge] | max, maxCurrentToCharge] | min }}
+      mqtt_go_echarger_topic: >-
+        {{ 'go-eCharger/%s/ids/set' % ems_charger_id }}
+  - service: mqtt.publish
+    data:
+      qos: "0"
+      retain: false
+      topic: "{{mqtt_go_echarger_topic}}"
+      payload: >-
+        {"pGrid": {{powerAvailable * -1}}, "pPv": {{(int(0))}}, "pAkku": {{(int(0))}}}
+    alias: Send mqtt pGrid information
+  - choose:
+      - conditions:
+          - condition: and
+            conditions:
+              - condition: numeric_state
+                entity_id: !input ems_car_battery_percentage_now
+                above: 0
+                below: !input ems_car_min_morning_battery
+              - condition: time
+                after: "21:00:00"
+                before: "05:00:00"
+            alias: "Morning minimum"
+        sequence:
+          - service: select.select_option
+            metadata: {}
+            data:
+              option: Auto
+            target:
+              entity_id: !input ems_charger_phases
+            alias: Set charging phases to Auto
+          - service: number.set_value
+            metadata: {}
+            data:
+              value: "{{ maxCurrentToCharge }}"
+            target:
+              entity_id: !input ems_charger_current
+            alias: Set Current
+          - service: select.select_option
+            metadata: {}
+            data:
+              option: Neutral
+            target:
+              entity_id: !input ems_charger_forced_state
+            alias: Start charging
+    default:
+      - alias: Set charging phases to single
+        service: select.select_option
+        metadata: {}
+        data:
+          option: Force single phase
+        target:
+          entity_id: !input ems_charger_phases
+      - service: number.set_value
+        metadata: {}
+        data:
+          value: "{{ currentAvailable }}"
+        target:
+          entity_id: !input ems_charger_current
+        alias: Set Current
+      - alias: Stop charging below minPowerToCharge
+        if:
+          - condition: template
+            value_template: "{{ powerAvailable < minPowerToCharge }}"
+            alias: Below minPowerToCharge
+        then:
+          - service: select.select_option
+            metadata: {}
+            data:
+              option: Don't charge
+            target:
+              entity_id: !input ems_charger_forced_state
+            alias: Stop Charging
+        else: []
+        enabled: true
+      - alias: Start charging above minPowerToCharge
+        if:
+          - condition: template
+            value_template: "{{ powerAvailable > minPowerToCharge }}"
+            alias: Above minPowerToCharge
+        then:
+          - service: select.select_option
+            metadata: {}
+            data:
+              option: Neutral
+            target:
+              entity_id: !input ems_charger_forced_state
+            alias: Start charging
+        else: []
+        enabled: true
+mode: single
