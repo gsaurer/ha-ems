@@ -2,7 +2,7 @@ blueprint:
   name: EMS - Car - Charging automation
   description: This script provides 3 different types of chaging (Default, Trip & Surplus) and adopts the settings of the charger settings accordingly. In this scenario the go-e Charger was used but the automation can be used for other chargers asw well as it is generic.
   domain: automation
-  source_url: https://github.com/gsaurer/ha-ems/blob/main/EMS-SurplusCharging.yaml
+  source_url: https://github.com/gsaurer/ha-ems/blob/main/blueprints/EMS-Car-SurplusCharging.yaml
   input:
     #general settings
     ems_enabled:
@@ -90,7 +90,7 @@ blueprint:
         number:
           min: 0
           max: 100
-          unit_of_measurement: percentage
+          unit_of_measurement: "%"
 
 variables:
   ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
@@ -112,7 +112,7 @@ action:
       maxCurrentToCharge: >-
         {{ 16 }}
       powerAvailable: >-
-        {{ states(ems_surplus_potential_power_mean) | int(0) + ems_surplus_max_power_from_grid | int(0)) }}
+        {{ states(ems_surplus_potential_power_mean) | int(0) + ems_surplus_max_power_from_grid | int(0) }}
       minPowerToCharge: >-
         {{ ems_surplus_min_power_available }}
       currentAvailable: >-
