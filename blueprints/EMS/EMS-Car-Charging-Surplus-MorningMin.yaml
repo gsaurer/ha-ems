@@ -55,24 +55,11 @@ blueprint:
     ems_charger_power_max:
       name: Charger - Power max
       description: The maximum kWh per hour the charger can load the car with
-      default: 11
-      selector:
-        number:
-          min: 1.0
-          max: 150.0
-          unit_of_measurement: kWh
-          step: 1.0
-          mode: slider
-    ems_car_battery_percentage_now:
-      name: Car - Battery percentage - now
-      description: The current battery level of the car
       selector:
         entity:
           filter:
-          - device_class:
-            - battery
-          - domain:
-            - sensor
+            - domain:
+                - input_number
           multiple: false
     ems_car_battery_percentage_morning:
       name: Car - Minimum morning battery percentage
@@ -89,6 +76,15 @@ blueprint:
           unit_of_measurement: "%"
           step: 1.0
           mode: slider
+    ems_car_battery_power_max:
+      name: Car - Battery power max
+      description: The maximum power of the battery in kWh
+      selector:
+        entity:
+          filter:
+            - domain:
+                - input_number
+          multiple: false
     ems_car_min_morning_time:
       name: Time the car should be loaded
       description: The time the car should have the minimum
@@ -97,6 +93,7 @@ blueprint:
         time:
 
 variables:
+  ems_calendar: !input ems_calendar
   ems_car_battery_percentage_now: !input ems_car_battery_percentage_now
   ems_car_battery_percentage_morning: !input ems_car_battery_percentage_morning
   ems_car_battery_power_max: !input ems_car_battery_power_max
