@@ -41,11 +41,6 @@ blueprint:
         entity:
           filter:
             - domain: select
-    ems_charger_id:
-      name: go-e Charger id
-      description: The go-e charger id that is used for the mqtt publishing.
-      selector:
-        number:
 
     #surplus settings
     ems_surplus_potential_power_mean:
@@ -96,7 +91,6 @@ variables:
   ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
   ems_surplus_max_power_from_grid: !input ems_surplus_max_power_from_grid
   ems_surplus_min_power_available: !input ems_surplus_min_power_available
-  ems_charger_id: !input ems_charger_id
 
 trigger:
   - platform: time_pattern
