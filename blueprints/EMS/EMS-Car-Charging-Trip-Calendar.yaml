@@ -124,7 +124,7 @@ action:
                 chargingPercentPerHour: >-
                   {{ 100 / (states(ems_car_battery_power_max) | int / states(ems_charger_power_max)|int) }}
                 chargingPercentMissing: >-
-                  {{states(ems_car_battery_power_trip)|float
+                  {{states(ems_car_battery_percentage_trip)|float
                   -
                   states(ems_car_battery_percentage_now)|float(100)
                   }}
