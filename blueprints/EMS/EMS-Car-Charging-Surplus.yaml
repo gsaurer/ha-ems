@@ -1,5 +1,5 @@
 blueprint:
-  name: "[EMS] - [Car] - Charging automation - Surplus"
+  name: "[EMS] - [Car] - [Charging automation] - Surplus"
   description: This script provides 3 different types of chaging (Default, Trip & Surplus) and adopts the settings of the charger settings accordingly. In this scenario the go-e Charger was used but the automation can be used for other chargers asw well as it is generic.
   domain: automation
   source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/blob/main/blueprints/EMS/EMS-Car-Charging-Surplus.yaml
@@ -120,16 +120,6 @@ action:
         {{ ems_surplus_min_power_available }}
       currentAvailable: >-
         {{ [[ (powerAvailable) // 230, minCurrentToCharge] | max, maxCurrentToCharge] | min }}
-      mqtt_go_echarger_topic: >-
-        {{ 'go-eCharger/%s/ids/set' % ems_charger_id }}
-  - service: mqtt.publish
-    data:
-      qos: "0"
-      retain: false
-      topic: "{{mqtt_go_echarger_topic}}"
-      payload: >-
-        {"pGrid": {{powerAvailable * -1}}, "pPv": {{(int(0))}}, "pAkku": {{(int(0))}}}
-    alias: Send mqtt pGrid information
   - choose:
       - conditions:
           - condition: and
