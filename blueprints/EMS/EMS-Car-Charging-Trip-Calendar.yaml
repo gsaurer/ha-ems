@@ -1,5 +1,5 @@
 blueprint:
-  name: "[EMS] - [Car] - [Charging automation] - Trip - Calendar entry"
+  name: "[EMS] - [Car] - [Charging automation] - [Trip] - Calendar entry"
   description: This script works in conjunction with the other automations. It checks the calendar for entries with a specific value and based on that set's the charging to a trip to make sure a certain battery % is reached. 
   domain: automation
   source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-Trip-Calendar.yaml
