@@ -1,5 +1,5 @@
 blueprint:
-  name: "[EMS] - [Car] - [Charging automation] - Surplus - go-e Eco"
+  name: "[EMS] - [Car] - [Charging automation] - [Surplus] - go-e Eco"
   description: This sends the values for Surplus charging on the go-e charger.
   domain: automation
   source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-Surplus-go-e-ECO.yaml
