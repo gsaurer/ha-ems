@@ -1,8 +1,8 @@
 blueprint:
-  name: "[EMS] - [Car] - [Charging automation] - Morning Minimum"
+  name: "[EMS] - [Car] - [Charging automation] - Surplus - Morning Minimum"
   description: Makes sure that in the morning there is at least the minimum amount of battery in the car.
   domain: automation
-  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-MorningMin.yaml
+  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-Surplus-MorningMin.yaml
   input:
     ems_enabled:
       name: EMS - Enabled
