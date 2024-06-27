@@ -1,5 +1,5 @@
 blueprint:
-  name: "[EMS] - [Car] - [Charging automation] - Surplus"
+  name: "[EMS] - [Car] - [Charging automation] - [Surplus] - Current-Start-Stop"
   description:
     This script provides 3 different types of chaging (Default, Trip &
     Surplus) and adopts the settings of the charger settings accordingly. In this
