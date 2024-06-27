@@ -21,12 +21,12 @@ blueprint:
     ems_charger_power_max:
       name: Charger - Power max
       description: The maximum kWh per hour the charger can load the car with
-      default: 11
       selector:
-        number:
-          min: 1
-          max: 150
-          unit_of_measurement: kWh
+        entity:
+          filter:
+          - domain:
+            - input_number
+          multiple: false
 
     #calendar settings
     ems_calendar:
@@ -122,7 +122,7 @@ action:
           then:
             - variables:
                 chargingPercentPerHour: >-
-                  {{ 100 / (states(ems_car_battery_power_max) | int / ems_charger_power_max) }}
+                  {{ 100 / (states(ems_car_battery_power_max) | int / states(ems_charger_power_max)|int) }}
                 chargingPercentMissing: >-
                   {{states(ems_car_battery_power_trip)|float
                   -
