@@ -119,13 +119,10 @@ condition:
     state: "on"
 action:
   - variables:
-      chargingPercentPerHour: "{{ 100 / (states(ems_car_battery_power_max) | int
-        / states(ems_charger_power_max)|int) }}"
+      chargingPercentPerHour: "{{ 100 / (states(ems_car_battery_power_max) | int / states(ems_charger_power_max)|int) }}"
       chargingPercentMissing:
-        "{{ems_car_battery_percentage_morning|float - states(ems_car_battery_percentage_now)|float(100)
-        }}"
-      minToFinish: "{{ ((chargingPercentMissing / chargingPercentPerHour) * 60)
-        | int }}"
+        "{{ [ems_car_battery_percentage_morning|float - states(ems_car_battery_percentage_now)|float(100), 0] | max }}"
+      minToFinish: "{{ ((chargingPercentMissing / chargingPercentPerHour) * 60) | int }}"
       tripDate: "{{ today_at(ems_car_min_morning_time) }}"
       timeToStart: "{{ today_at(ems_car_min_morning_time) - timedelta( minutes
         = minToFinish+15) }}"
@@ -135,8 +132,12 @@ action:
         value_template: '{{ states(ems_charging_type) == "Surplus" }}'
         alias: Check if Surplus is on
       - condition: template
+        value_template: "{{ ems_car_battery_percentage_morning < ems_car_battery_percentage_now }}"
+        alias: Check if 
+      - condition: template
         value_template: "{{ timeToStart|as_datetime < now() + timedelta( minutes
           = 10) }}"
+        aliqw: Check if time to start is right
     then:
       - service: input_select.select_option
         metadata: {}
