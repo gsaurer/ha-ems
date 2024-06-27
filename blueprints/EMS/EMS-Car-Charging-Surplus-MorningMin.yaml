@@ -1,5 +1,5 @@
 blueprint:
-  name: "[EMS] - [Car] - [Charging automation] - Surplus - Morning Minimum"
+  name: "[EMS] - [Car] - [Charging automation] - [Surplus] - Morning Minimum"
   description:
     Makes sure that in the morning there is at least the minimum amount
     of battery in the car.
