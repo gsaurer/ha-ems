@@ -126,8 +126,8 @@ action:
         }}"
       minToFinish: "{{ ((chargingPercentMissing / chargingPercentPerHour) * 60)
         | int }}"
-      tripDate: "{{ ems_car_min_morning_time|as_datetime }}"
-      timeToStart: "{{ ems_car_min_morning_time|as_datetime - timedelta( minutes
+      tripDate: "{{ today_at(ems_car_min_morning_time) }}"
+      timeToStart: "{{ today_at(ems_car_min_morning_time) - timedelta( minutes
         = minToFinish+15) }}"
   - alias: Check to change Charging for Morning-Min
     if:
