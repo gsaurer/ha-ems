@@ -35,7 +35,6 @@ blueprint:
           domain: sensor
 variables:
   ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
-  ems_surplus_max_power_from_grid: !input ems_surplus_max_power_from_grid
   ems_charger_id: !input ems_charger_id
 
 trigger:
