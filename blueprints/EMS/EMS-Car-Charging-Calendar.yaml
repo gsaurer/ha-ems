@@ -1,5 +1,5 @@
 blueprint:
-  name: "[EMS] - [Car] - [Charging automation] - calendar entry"
+  name: "[EMS] - [Car] - [Charging automation] - Calendar entry"
   description: This script provides works in conjunction with the other automations. It checks the calendar for entries with a specific value and based on that set's the charging accordingly.
   domain: automation
   source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-Calendar.yaml
