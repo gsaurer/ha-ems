@@ -284,6 +284,43 @@ action:
       - conditions:
           - condition: state
             entity_id: !input ems_charging_type
+            state: Morning-Min
+        sequence:
+          - service: select.select_option
+            metadata: {}
+            data:
+              option: Default
+            target:
+              entity_id: !input ems_charger_logic_mode
+          - service: select.select_option
+            metadata: {}
+            data:
+              option: Neutral
+            target:
+              entity_id: !input ems_charger_forced_state
+          - service: select.select_option
+            metadata: {}
+            data:
+              option: Auto
+            target:
+              entity_id: !input ems_charger_phases
+            alias: Set charging phases to Auto
+          - service: number.set_value
+            metadata: {}
+            data:
+              value: "{{ ems_charger_current_trip }}"
+            target:
+              entity_id: !input ems_charger_current
+            alias: Set Current
+          - service: number.set_value
+            metadata: {}
+            data:
+              value: "{{ states(ems_car_battery_percentage_trip)|int(0) }}"
+            target:
+              entity_id: !input ems_car_battery_percentage_charging_limit        
+      - conditions:
+          - condition: state
+            entity_id: !input ems_charging_type
             state: Stop
         sequence: []
 mode: single
