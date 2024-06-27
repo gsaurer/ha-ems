@@ -54,7 +54,7 @@ blueprint:
           multiple: false
     ems_charger_power_max:
       name: Charger - Power max
-      description: The maximum kWh per hour the charger can load the car with
+      description: The maximum kW the charger can load the car with (normally 11/22kW)
       selector:
         entity:
           filter:
