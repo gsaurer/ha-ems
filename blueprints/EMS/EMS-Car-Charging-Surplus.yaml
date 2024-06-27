@@ -104,7 +104,6 @@ blueprint:
             - domain:
                 - sensor
           multiple: false
-
 variables:
   ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
   ems_surplus_max_power_from_grid: !input ems_surplus_max_power_from_grid
@@ -130,42 +129,41 @@ action:
       currentAvailable:
         "{{ [[ (powerAvailable) // 230, minCurrentToCharge] | max, maxCurrentToCharge]
         | min }}"
-  - choose:
-      - service: number.set_value
+  - service: number.set_value
+    metadata: {}
+    data:
+      value: "{{ currentAvailable }}"
+    target:
+      entity_id: !input ems_charger_current
+    alias: Set Current
+  - alias: Stop charging below minPowerToCharge
+    if:
+      - condition: template
+        value_template: "{{ powerAvailable < minPowerToCharge }}"
+        alias: Below minPowerToCharge
+    then:
+      - service: select.select_option
         metadata: {}
         data:
-          value: "{{ currentAvailable }}"
+          option: Don't charge
         target:
-          entity_id: !input ems_charger_current
-        alias: Set Current
-      - alias: Stop charging below minPowerToCharge
-        if:
-          - condition: template
-            value_template: "{{ powerAvailable < minPowerToCharge }}"
-            alias: Below minPowerToCharge
-        then:
-          - service: select.select_option
-            metadata: {}
-            data:
-              option: Don't charge
-            target:
-              entity_id: !input ems_charger_forced_state
-            alias: Stop Charging
-        else: []
-        enabled: true
-      - alias: Start charging above minPowerToCharge
-        if:
-          - condition: template
-            value_template: "{{ powerAvailable > minPowerToCharge }}"
-            alias: Above minPowerToCharge
-        then:
-          - service: select.select_option
-            metadata: {}
-            data:
-              option: Neutral
-            target:
-              entity_id: !input ems_charger_forced_state
-            alias: Start charging
-        else: []
-        enabled: true
+          entity_id: !input ems_charger_forced_state
+        alias: Stop Charging
+    else: []
+    enabled: true
+  - alias: Start charging above minPowerToCharge
+    if:
+      - condition: template
+        value_template: "{{ powerAvailable > minPowerToCharge }}"
+        alias: Above minPowerToCharge
+    then:
+      - service: select.select_option
+        metadata: {}
+        data:
+          option: Neutral
+        target:
+          entity_id: !input ems_charger_forced_state
+        alias: Start charging
+    else: []
+    enabled: true
 mode: single
