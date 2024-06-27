@@ -2,7 +2,7 @@ blueprint:
   name: "[EMS] - [Car] - [Charging automation] - Surplus"
   description: This script provides 3 different types of chaging (Default, Trip & Surplus) and adopts the settings of the charger settings accordingly. In this scenario the go-e Charger was used but the automation can be used for other chargers asw well as it is generic.
   domain: automation
-  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/blob/main/blueprints/EMS/EMS-Car-Charging-Surplus.yaml
+  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-Surplus.yaml
   input:
     #general settings
     ems_enabled:
