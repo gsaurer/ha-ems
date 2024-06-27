@@ -24,7 +24,8 @@ blueprint:
       name: go-e Charger id
       description: The go-e charger id that is used for the mqtt publishing.
       selector:
-        number:
+        text:
+        
 
     #surplus settings
     ems_surplus_potential_power_mean:
