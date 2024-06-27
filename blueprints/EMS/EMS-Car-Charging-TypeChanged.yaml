@@ -1,5 +1,5 @@
 blueprint:
-  name: "[EMS] - [Car] - Charging automation - Type changed"
+  name: "[EMS] - [Car] - [Charging automation] - Type changed"
   description:
     This automation adopts the settings of the go-e charger accordingly
     after a specific charging type has been selected. Supported Types are (Default,
