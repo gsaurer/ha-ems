@@ -1,43 +1,47 @@
 blueprint:
-  name: '[EMS] - [Car] - [Charging automation] - Surplus - Morning Minimum'
-  description: Makes sure that in the morning there is at least the minimum amount
+  name: "[EMS] - [Car] - [Charging automation] - Surplus - Morning Minimum"
+  description:
+    Makes sure that in the morning there is at least the minimum amount
     of battery in the car.
   domain: automation
   source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-Surplus-MorningMin.yaml
   input:
     ems_enabled:
       name: EMS - Enabled
-      description: Switch that defines if the Energy Managment system should be turned
+      description:
+        Switch that defines if the Energy Managment system should be turned
         on. It's the main switch for your EMS systm. If you don't have one create
         a new one directly in the blueprint. Turning it off this will disable this
         automation.
       selector:
         entity:
           domain:
-          - input_boolean
+            - input_boolean
           multiple: false
     ems_charging_type:
       name: Charging type
-      description: This defines which type of charging should be used - Potential
+      description:
+        This defines which type of charging should be used - Potential
         values of this entity are (Default, Surplus, Trip, Stop). If you don't have
         this entity create it directly in the blueprint and add it to your it to your
         dashboard to select what charging type you want.
       selector:
         entity:
           filter:
-          - domain:
-            - input_select
+            - domain:
+                - input_select
           multiple: false
     ems_charger_phases:
       name: Charger - Phase switch mode
-      description: Defines if the charger is using single phase for charging. At the
+      description:
+        Defines if the charger is using single phase for charging. At the
         moment only Single phase is supported for Surplus but it will set it back
         to 3-phase charging for other Types (e.g. Default & Trip)
       selector:
         entity:
           filter:
-          - domain:
-            - select
+            - domain:
+                - select
           multiple: false
     ems_charger_current:
       name: Charger - Requested current
@@ -45,8 +49,8 @@ blueprint:
       selector:
         entity:
           filter:
-          - domain:
-            - number
+            - domain:
+                - number
           multiple: false
     ems_charger_power_max:
       name: Charger - Power max
@@ -59,9 +63,10 @@ blueprint:
           unit_of_measurement: kWh
           step: 1.0
           mode: slider
-    ems_car_min_morning_battery:
+    ems_car_battery_percentage_morning:
       name: Car - Minimum morning battery percentage
-      description: The minimum battery percentage in the morning to start the day.
+      description:
+        The minimum battery percentage in the morning to start the day.
         If the battery is below this value the automation will make sure the battery
         has at lest the % configured here in the morning even the setting is set to
         surplus charging.
@@ -70,13 +75,13 @@ blueprint:
         number:
           min: 0.0
           max: 100.0
-          unit_of_measurement: '%'
+          unit_of_measurement: "%"
           step: 1.0
           mode: slider
     ems_car_min_morning_time:
       name: Time the car should be loaded
-      description: The time the car should have the minimum 
-      default: '05:00:00'
+      description: The time the car should have the minimum
+      default: "05:00:00"
       selector:
         time:
 
@@ -89,52 +94,53 @@ variables:
   ems_car_min_morning_time: !input ems_car_min_morning_time
 
 trigger:
-- platform: time_pattern
-  minutes: /10
+  - platform: time_pattern
+    minutes: /10
 condition:
-- condition: state
-  entity_id: !input ems_enabled
-  state: 'on'
+  - condition: state
+    entity_id: !input ems_enabled
+    state: "on"
 action:
   - variables:
-      chargingPercentPerHour: '{{ 100 / (states(ems_car_battery_power_max) | int
-        / ems_charger_power_max) }}'
-      chargingPercentMissing: '{{ems_car_battery_percentage_morning|float - states(ems_car_battery_percentage_now)|float(100)
-        }}'
-      minToFinish: '{{ ((chargingPercentMissing / chargingPercentPerHour) * 60)
-        | int }}'
-      tripDate: '{{ ems_car_min_morning_time|as_datetime }}'
-      timeToStart: '{{ ems_car_min_morning_time|as_datetime - timedelta( minutes
-        = minToFinish+15) }}'
+      chargingPercentPerHour: "{{ 100 / (states(ems_car_battery_power_max) | int
+        / ems_charger_power_max) }}"
+      chargingPercentMissing:
+        "{{ems_car_battery_percentage_morning|float - states(ems_car_battery_percentage_now)|float(100)
+        }}"
+      minToFinish: "{{ ((chargingPercentMissing / chargingPercentPerHour) * 60)
+        | int }}"
+      tripDate: "{{ ems_car_min_morning_time|as_datetime }}"
+      timeToStart: "{{ ems_car_min_morning_time|as_datetime - timedelta( minutes
+        = minToFinish+15) }}"
   - alias: Check to change Charging for Morning-Min
     if:
-    - condition: template
-      value_template: '{{ states(ems_charging_type) == "Surplus" }}'
-      alias: Check if Surplus is on
-    - condition: template
-      value_template: '{{ timeToStart|as_datetime < now() + timedelta( minutes
-        = 10) }}'
+      - condition: template
+        value_template: '{{ states(ems_charging_type) == "Surplus" }}'
+        alias: Check if Surplus is on
+      - condition: template
+        value_template: "{{ timeToStart|as_datetime < now() + timedelta( minutes
+          = 10) }}"
     then:
-    - service: input_select.select_option
-      metadata: {}
-      data:
-        option: Morning-Min
-      target:
-        entity_id: !input ems_charging_type
-      enabled: true
+      - service: input_select.select_option
+        metadata: {}
+        data:
+          option: Morning-Min
+        target:
+          entity_id: !input ems_charging_type
+        enabled: true
   - alias: Check to change back to Surplus
     if:
-    - condition: template
-      value_template: '{{ states(ems_charging_type) != "Morning-Min" }}'
-      alias: Check if Morning-Min is active
-    - condition: template
-      value_template: '{{ ems_car_battery_percentage_morning < ems_car_battery_percentage_now }}'
+      - condition: template
+        value_template: '{{ states(ems_charging_type) != "Morning-Min" }}'
+        alias: Check if Morning-Min is active
+      - condition: template
+        value_template: "{{ ems_car_battery_percentage_morning < ems_car_battery_percentage_now }}"
     then:
-    - service: input_select.select_option
-      metadata: {}
-      data:
-        option: Surplus
-      target:
-        entity_id: !input ems_charging_type
-      enabled: true
+      - service: input_select.select_option
+        metadata: {}
+        data:
+          option: Surplus
+        target:
+          entity_id: !input ems_charging_type
+        enabled: true
 mode: single
