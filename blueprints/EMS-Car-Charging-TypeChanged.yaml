@@ -202,6 +202,8 @@ action:
               entity_id: !input ems_charger_current
             alias: Set Current
           - service: number.set_value
+            enabled: false
+            continue_on_error: true
             metadata: {}
             data:
               value: "{{ states(ems_car_battery_percentage_default)|int(0) }}"
@@ -239,6 +241,8 @@ action:
               entity_id: !input ems_charger_current
             alias: Set Current
           - service: number.set_value
+            enabled: false
+            continue_on_error: true
             metadata: {}
             data:
               value: "{{ states(ems_car_battery_percentage_default)|int(0) }}"
@@ -276,6 +280,8 @@ action:
               entity_id: !input ems_charger_current
             alias: Set Current
           - service: number.set_value
+            enabled: false
+            continue_on_error: true
             metadata: {}
             data:
               value: "{{ states(ems_car_battery_percentage_trip)|int(0) }}"
@@ -313,6 +319,8 @@ action:
               entity_id: !input ems_charger_current
             alias: Set Current
           - service: number.set_value
+            enabled: false
+            continue_on_error: true
             metadata: {}
             data:
               value: "{{ states(ems_car_battery_percentage_trip)|int(0) }}"
