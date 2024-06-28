@@ -202,7 +202,6 @@ action:
               entity_id: !input ems_charger_current
             alias: Set Current
           - service: number.set_value
-            enabled: false
             continue_on_error: true
             metadata: {}
             data:
@@ -241,7 +240,6 @@ action:
               entity_id: !input ems_charger_current
             alias: Set Current
           - service: number.set_value
-            enabled: false
             continue_on_error: true
             metadata: {}
             data:
@@ -280,7 +278,6 @@ action:
               entity_id: !input ems_charger_current
             alias: Set Current
           - service: number.set_value
-            enabled: false
             continue_on_error: true
             metadata: {}
             data:
@@ -319,7 +316,6 @@ action:
               entity_id: !input ems_charger_current
             alias: Set Current
           - service: number.set_value
-            enabled: false
             continue_on_error: true
             metadata: {}
             data:
