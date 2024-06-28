@@ -169,9 +169,9 @@ action:
                   data:
                     option: Trip
                   target:
-                    entity_id: !input ems_charging_type
-                  enabled: true
+                    entity_id: !input ems_charging_type                  
                 - service: notify.signal_me
+                  enabled: false
                   data:
                     title: "[EMS] - Trip - Charging"
                     message: >-
