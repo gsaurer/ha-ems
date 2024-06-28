@@ -160,6 +160,10 @@ action:
                   alias: Check if Trip is already on
                 - condition: template
                   value_template: >-
+                    {{ tripDate < now() }}
+                  alias: Check if Trip has already started.
+                - condition: template
+                  value_template: >-
                     {{ timeToStart|as_datetime < now() + timedelta( minutes =
                     10) }}
               then:
