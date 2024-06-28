@@ -145,7 +145,6 @@ action:
                   alias: Check if Trip is starting in less than 15h
               then:
                 - service: number.set_value
-                  enabled: false
                   continue_on_error: true
                   metadata: {}
                   data:
@@ -171,7 +170,6 @@ action:
                   target:
                     entity_id: !input ems_charging_type                  
                 - service: notify.signal_me
-                  enabled: false
                   data:
                     title: "[EMS] - Trip - Charging"
                     message: >-
