@@ -1,0 +1,65 @@
+blueprint:
+  name: "[EMS] - [Car] - [Charging automation] - [Surplus] - go-e Eco"
+  description: This sends the values for Surplus charging on the go-e charger.
+  domain: automation
+  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS-Car-Charging-Surplus-go-e-ECO.yaml
+  input:
+    #general settings
+    ems_enabled:
+      name: EMS - Enabled
+      description: Switch that defines if the Energy Managment system should be turned on. It's the main switch for your EMS systm. If you don't have one create a new one directly in the blueprint. Turning it off this will disable this automation.
+      selector:
+        entity:
+          domain: input_boolean
+    ems_charging_type:
+      name: Charging type
+      description: This defines which type of charging should be used - Potential values of this entity are (Default, Surplus, Trip, Stop). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: input_select
+
+    #charger settings
+    ems_charger_id:
+      name: go-e Charger id
+      description: The go-e charger id that is used for the mqtt publishing.
+      selector:
+        text:
+        
+
+    #surplus settings
+    ems_surplus_potential_power_mean:
+      name: Surplus - potential power (mean)
+      description: Defines the potential power that is available for car charging. For that create a helper sensor that calculates the value based on your Perference. It is  recommended to leverage the ha-average  integration and create an average value (5min) for the current avaialble energy to smooth peaks.
+      selector:
+        entity:
+          domain: sensor
+variables:
+  ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
+  ems_charger_id: !input ems_charger_id
+
+trigger:
+  - platform: time_pattern
+    seconds: /5
+condition:
+  - condition: state
+    entity_id: !input ems_enabled
+    state: "on"
+  - condition: state
+    entity_id: !input ems_charging_type
+    state: Surplus
+action:
+  - variables:
+      powerAvailable: >-
+        {{ states(ems_surplus_potential_power_mean) | int(0) }}
+      mqtt_go_echarger_topic: >-
+        {{ 'go-eCharger/%s/ids/set' % ems_charger_id }}
+  - service: mqtt.publish
+    data:
+      qos: "0"
+      retain: false
+      topic: "{{mqtt_go_echarger_topic}}"
+      payload: >-
+        {"pGrid": {{powerAvailable * -1}}, "pPv": {{(int(0))}}, "pAkku": {{(int(0))}}}
+    alias: Send mqtt pGrid information
+mode: single
