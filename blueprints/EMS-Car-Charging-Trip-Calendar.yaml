@@ -125,7 +125,7 @@ action:
                 minToFinish: >-
                   {{ ((chargingPercentMissing / chargingPercentPerHour) * 60) |
                   int }}
-                tripDate: "{{ repeat.item['start']|as_datetime }}"
+                tripDateTime: "{{ repeat.item['start']|as_datetime }}"
                 timeToStart: >-
                   {{ repeat.item['start']|as_datetime - timedelta( minutes =
                   minToFinish+15) }}
@@ -141,7 +141,7 @@ action:
                     {{ states(ems_charging_type) == "Surplus" }}
                   alias: Check if Surplus is set
                 - condition: template
-                  value_template: "{{ tripDate|as_datetime < now() + timedelta( hours = 15) }}"
+                  value_template: "{{ tripDateTime|as_datetime < now() + timedelta( hours = 15) }}"
                   alias: Check if Trip is starting in less than 15h
               then:
                 - service: number.set_value
@@ -160,7 +160,7 @@ action:
                   alias: Check if Trip is already on
                 - condition: template
                   value_template: >-
-                    {{ tripDate < now() }}
+                    {{ tripDateTime|as_datetime < now() }}
                   alias: Check if Trip has already started.
                 - condition: template
                   value_template: >-
