@@ -23,7 +23,7 @@ This repository provides a set of blueprints for Home Assistant to generate an E
 This is the default script you will need to use if you start with your automation. This script makes sure to adopt the different settigns based on a Charging Type - a helper entity - that contains the following Options (Default, Trip, Surplus, Morning-Min and Stop). 
 
 
-[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fgsaurer%2Fha-ems%2Fmain%2Fblueprints%2FEMS%2FEMS-Car-Charging-TypeChanged.yaml)
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fgsaurer%2Fha-ems%2Fmain%2Fblueprints%2FEMS-Car-Charging-TypeChanged.yaml)
 
 ![EMS-Car-Charging-TypeChanged](https://github.com/gsaurer/ha-ems/assets/2656836/bd132bc2-c6cb-4d79-a2b6-fa59dfbcf558)
 
