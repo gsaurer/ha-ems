@@ -102,20 +102,20 @@ See separate [license file](LICENSE.md) for full text.
 
 ***
 
-[component]: https://github.com/gesaur/ha-ems
-[commits-shield]: https://img.shields.io/github/commit-activity/y/gesaur/ha-ems.svg?style=popout
-[commits]: https://github.com/gesaur/ha-ems/commits/dev
+[component]: https://github.com/gsaurer/ha-ems
+[commits-shield]: https://img.shields.io/github/commit-activity/y/gsaurer/ha-ems.svg?style=popout
+[commits]: https://github.com/gsaurer/ha-ems/commits/dev
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/t/average-sensor/111674
-[license]: https://github.com/gesaur/ha-ems/blob/main/LICENSE.md
+[license]: https://github.com/gsaurer/ha-ems/blob/main/LICENSE.md
 [license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
-[maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40gesaurer-blue.svg?style=popout
-[releases-shield]: https://img.shields.io/github/release/gesaur/ha-ems.svg?style=popout
-[releases]: https://github.com/gesaur/ha-ems/releases
-[releases-latest]: https://github.com/gesaur/ha-ems/releases/latest
-[user_profile]: https://github.com/gesaur
-[report_bug]: https://github.com/gesaur/ha-ems/issues/new?template=bug_report.md
-[suggest_idea]: https://github.com/gesaur/ha-ems/issues/new?template=feature_request.md
-[contributors]: https://github.com/gesaur/ha-ems/graphs/contributors
+[maintenance-shield]: https://img.shields.io/badge/maintainer-Gerd%20Saurer%20%gsaurer-blue.svg?style=popout
+[releases-shield]: https://img.shields.io/github/release/gsaurer/ha-ems.svg?style=popout
+[releases]: https://github.com/gsaurer/ha-ems/releases
+[releases-latest]: https://github.com/gsaurer/ha-ems/releases/latest
+[user_profile]: https://github.com/gsaurer
+[report_bug]: https://github.com/gsaurer/ha-ems/issues/new?template=bug_report.md
+[suggest_idea]: https://github.com/gsaurer/ha-ems/issues/new?template=feature_request.md
+[contributors]: https://github.com/gsaurer/ha-ems/graphs/contributors
 [patreon-shield]: https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dgsaurer%26type%3Dpatrons&style=popout
-[patreon]: https://www.patreon.com/join/gesaurer
+[patreon]: https://www.patreon.com/join/gsaurer
