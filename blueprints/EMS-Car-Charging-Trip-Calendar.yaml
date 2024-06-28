@@ -145,6 +145,7 @@ action:
                   alias: Check if Trip is starting in less than 15h
               then:
                 - service: number.set_value
+                  continue_on_error: true
                   metadata: {}
                   data:
                     value: >-
