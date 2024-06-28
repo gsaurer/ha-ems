@@ -135,7 +135,6 @@ action:
               data:
                 datetime: "{{timeToStart}}"
             - alias: Check to change Charging Limit (Surplus enablement) - This is done to make sure we use sun the sun more bebefore we travel.
-              continue_on_error: true
               if:
                 - condition: template
                   value_template: >-
@@ -146,6 +145,7 @@ action:
                   alias: Check if Trip is starting in less than 15h
               then:
                 - service: number.set_value
+                  enabled: false
                   continue_on_error: true
                   metadata: {}
                   data:
