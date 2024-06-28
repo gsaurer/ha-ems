@@ -5,7 +5,7 @@ blueprint:
     after a specific charging type has been selected. Supported Types are (Default,
     Surpluse, Trip and Stop)
   domain: automation
-  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-TypeChanged.yaml
+  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS-Car-Charging-TypeChanged.yaml
   input:
     ems_enabled:
       name: EMS - Enabled
