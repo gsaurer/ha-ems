@@ -7,7 +7,6 @@
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE.md)
 
-[![hacs][hacs-shield]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
 [![Support me on Patreon][patreon-shield]][patreon]
 
@@ -74,3 +73,49 @@ Based on entries within a selectable callendar in Home assitant this script make
 
 ![EMS-Car-Charging-Trip-Calendar](https://github.com/gsaurer/ha-ems/assets/2656836/736a0858-6e0a-4182-b48e-c18f1acc5308)
 
+
+
+
+## Contributions are welcome!
+
+This is an active open-source project. We are always open to people who want to
+use the code or contribute to it.
+
+We have set up a separate document containing our
+[contribution guidelines](CONTRIBUTING.md).
+
+Thank you for being involved! :heart_eyes:
+
+## Authors & contributors
+
+The original setup of this component is by [Gerd Saurer](https://github.com/gsaurer).
+
+For a full list of all authors and contributors,
+check [the contributor's page][contributors].
+
+
+## License
+
+creative commons Attribution-NonCommercial-ShareAlike 4.0 International License
+
+See separate [license file](LICENSE.md) for full text.
+
+***
+
+[component]: https://github.com/gesaur/ha-ems
+[commits-shield]: https://img.shields.io/github/commit-activity/y/gesaur/ha-ems.svg?style=popout
+[commits]: https://github.com/gesaur/ha-ems/commits/dev
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
+[forum]: https://community.home-assistant.io/t/average-sensor/111674
+[license]: https://github.com/gesaur/ha-ems/blob/main/LICENSE.md
+[license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
+[maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40gesaurer-blue.svg?style=popout
+[releases-shield]: https://img.shields.io/github/release/gesaur/ha-ems.svg?style=popout
+[releases]: https://github.com/gesaur/ha-ems/releases
+[releases-latest]: https://github.com/gesaur/ha-ems/releases/latest
+[user_profile]: https://github.com/gesaur
+[report_bug]: https://github.com/gesaur/ha-ems/issues/new?template=bug_report.md
+[suggest_idea]: https://github.com/gesaur/ha-ems/issues/new?template=feature_request.md
+[contributors]: https://github.com/gesaur/ha-ems/graphs/contributors
+[patreon-shield]: https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dgsaurer%26type%3Dpatrons&style=popout
+[patreon]: https://www.patreon.com/join/gesaurer
