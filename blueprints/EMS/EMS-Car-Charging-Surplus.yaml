@@ -6,7 +6,7 @@ blueprint:
     scenario the go-e Charger was used but the automation can be used for other chargers
     asw well as it is generic.
   domain: automation
-  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS/EMS-Car-Charging-Surplus.yaml
+  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS-Car-Charging-Surplus.yaml
   input:
     ems_enabled:
       name: EMS - Enabled
