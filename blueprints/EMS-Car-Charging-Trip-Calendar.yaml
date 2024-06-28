@@ -179,7 +179,7 @@ action:
                     message: >-
                       [EMS] Changed Charging to load for Trip {{
                       repeat.item['summary'] }} at {{
-                      repeat.item['start']|as_datetime|
+                      tripDateTime|as_datetime|
                       timestamp_custom('%H:%M') }}. Current battery state is {{
                       states(ems_car_battery_percentage_now) }}%.
                       {{ chargingPercentMissing }}% will be charged in {{
