@@ -82,15 +82,9 @@ blueprint:
           filter:
             - domain: input_number
 
-    #otehrs
-    #ems_notification_service:
-    #  name: Notification service to use
-    #  description: Notification service to send a note when charging has started
-    #  selector:
-    #    action:
-
 variables:
   ems_calendar: !input ems_calendar
+  ems_charging_type: !input ems_charging_type
   ems_calendar_tag: !input ems_calendar_tag
   ems_car_battery_percentage_now: !input ems_car_battery_percentage_now
   ems_car_battery_percentage_trip: !input ems_car_battery_percentage_trip
