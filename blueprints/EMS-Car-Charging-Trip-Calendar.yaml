@@ -104,7 +104,7 @@ action:
       entity_id: !input ems_calendar
     data:
       duration:
-        hours: 24
+        hours: 48
         minutes: 0
         seconds: 0
     response_variable: events
