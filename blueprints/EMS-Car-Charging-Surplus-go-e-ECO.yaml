@@ -37,6 +37,7 @@ blueprint:
 variables:
   ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
   ems_charger_id: !input ems_charger_id
+  ems_charging_type: !input ems_charging_type
 
 trigger:
   - platform: time_pattern
