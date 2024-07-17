@@ -105,6 +105,7 @@ blueprint:
                 - sensor
           multiple: false
 variables:
+  ems_charging_type: !input ems_charging_type
   ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
   ems_surplus_max_power_from_grid: !input ems_surplus_max_power_from_grid
   ems_surplus_min_power_available: !input ems_surplus_min_power_available
