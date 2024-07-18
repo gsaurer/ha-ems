@@ -133,7 +133,7 @@ action:
         value_template: '{{ states(ems_charging_type) == "Surplus" }}'
         alias: Check if Surplus is on
       - condition: template
-        value_template: "{{ ems_car_battery_percentage_morning < states(ems_car_battery_percentage_now) }}"
+        value_template: "{{ ems_car_battery_percentage_morning > states(ems_car_battery_percentage_now) }}"
         alias: Check if charging needed
       - condition: template
         value_template: "{{ timeToStart|as_datetime < now() + timedelta( minutes
