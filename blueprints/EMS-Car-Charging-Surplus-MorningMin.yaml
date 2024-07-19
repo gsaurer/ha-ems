@@ -150,10 +150,10 @@ action:
   - alias: Check to change back to Surplus
     if:
       - condition: template
-        value_template: '{{ states(ems_charging_type) != "Morning-Min" }}'
+        value_template: '{{ states(ems_charging_type) == "Morning-Min" }}'
         alias: Check if Morning-Min is active
       - condition: template
-        value_template: "{{ ems_car_battery_percentage_morning < ems_car_battery_percentage_now }}"
+        value_template: "{{ chargingPercentMissing <= 0 }}"
     then:
       - service: input_select.select_option
         metadata: {}
