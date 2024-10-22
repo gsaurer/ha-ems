@@ -49,6 +49,13 @@ blueprint:
         entity:
           filter:
             - domain: input_datetime
+    ems_calendar_change_battery_max_before_trip:
+      name: Calendar - Change Battery Max before trip
+      description: Time to change to Battery percentage to Trip before the trip starts. 
+        This allows usage of hihger surpluse (e.g. day before morning trip) instead of
+        using grid energy.
+      selector:
+        time:
 
     # car settings
     ems_car_battery_percentage_now:
