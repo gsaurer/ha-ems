@@ -54,6 +54,7 @@ blueprint:
       description: Time to change to Battery percentage to Trip before the trip starts. 
         This allows usage of hihger surpluse (e.g. day before morning trip) instead of
         using grid energy.
+      default: 15:00:00
       selector:
         time:
 
