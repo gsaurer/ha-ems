@@ -50,7 +50,7 @@ blueprint:
           filter:
             - domain: input_datetime
     ems_calendar_change_battery_max_before_trip:
-      name: Calendar - Change Battery Max before trip
+      name: Calendar - Change Battery percentage before trip
       description: Time to change to Battery percentage to Trip before the trip starts. 
         This allows usage of hihger surpluse (e.g. day before morning trip) instead of
         using grid energy.
@@ -94,6 +94,7 @@ variables:
   ems_calendar: !input ems_calendar
   ems_charging_type: !input ems_charging_type
   ems_calendar_tag: !input ems_calendar_tag
+  ems_calendar_change_battery_max_before_trip: !input ems_calendar_change_battery_max_before_trip
   ems_car_battery_percentage_now: !input ems_car_battery_percentage_now
   ems_car_battery_percentage_trip: !input ems_car_battery_percentage_trip
   ems_car_battery_power_max: !input ems_car_battery_power_max
@@ -149,7 +150,7 @@ action:
                     {{ states(ems_charging_type) == "Surplus" }}
                   alias: Check if Surplus is set
                 - condition: template
-                  value_template: "{{ tripDateTime|as_datetime < now() + timedelta( hours = 15) }}"
+                  value_template: "{{ tripDateTime|as_datetime < now() + ems_calendar_change_battery_max_before_trip|timedelta }}"
                   alias: Check if Trip is starting in less than 15h
               then:
                 - service: number.set_value
