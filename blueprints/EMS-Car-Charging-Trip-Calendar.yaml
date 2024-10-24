@@ -57,6 +57,13 @@ blueprint:
       default: 15:00:00
       selector:
         time:
+    ems_calendar_ready_before_trip:
+      name: Calendar - Ready before Trip
+      description: Time the car should be ready before the trip in the calendar starts. Minimum is 10min. 
+        using grid energy.
+      default: 00:10:00
+      selector:
+        time:
 
     # car settings
     ems_car_battery_percentage_now:
@@ -151,7 +158,7 @@ action:
                   alias: Check if Surplus is set
                 - condition: template
                   value_template: "{{ tripDateTime|as_datetime < now() + ems_calendar_change_battery_max_before_trip|as_timedelta }}"
-                  alias: Check if Trip is starting in less than 15h
+                  alias: Check if Trip is starting in less the time configured for surplus
               then:
                 - service: number.set_value
                   continue_on_error: true
@@ -173,8 +180,7 @@ action:
                   alias: Check if Trip has already started.
                 - condition: template
                   value_template: >-
-                    {{ timeToStart|as_datetime < now() + timedelta( minutes =
-                    10) }}
+                    {{ timeToStart|as_datetime < now() + ems_calendar_ready_before_trip|as_timedelta }}
               then:
                 - service: input_select.select_option
                   metadata: {}
