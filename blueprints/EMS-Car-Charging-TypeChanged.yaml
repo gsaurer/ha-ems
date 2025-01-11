@@ -216,7 +216,7 @@ action:
           - service: select.select_option
             metadata: {}
             data:
-              option: Eco mode
+              option: Default
             target:
               entity_id: !input ems_charger_logic_mode
           - service: select.select_option
