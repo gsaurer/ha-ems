@@ -111,14 +111,14 @@ variables:
   ems_charger_power_max: !input ems_charger_power_max
   ems_car_min_morning_time: !input ems_car_min_morning_time
 
-trigger:
-  - platform: time_pattern
+triggers:
+  - trigger: time_pattern
     minutes: /10
-condition:
+conditions:
   - condition: state
     entity_id: !input ems_enabled
     state: "on"
-action:
+actions:
   - variables:
       chargingPercentPerHour: "{{ 100 / (states(ems_car_battery_power_max) | int / states(ems_charger_power_max)|int) }}"
       chargingPercentMissing:

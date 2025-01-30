@@ -159,16 +159,16 @@ variables:
   ems_charger_current_default: !input ems_charger_current_default
   ems_charger_current_surplus: !input ems_charger_current_surplus
   ems_charger_current_trip: !input ems_charger_current_trip
-trigger:
-  - platform: state
+triggers:
+  - trigger: state
     entity_id: !input ems_charging_type
-  - platform: time
+  - trigger: time
     at: 06:00:00
-condition:
+conditions:
   - condition: state
     entity_id: !input ems_enabled
     state: "on"
-action:
+actions:
   - choose:
       - conditions:
           - condition: state

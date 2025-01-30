@@ -107,14 +107,14 @@ variables:
   ems_car_battery_power_max: !input ems_car_battery_power_max
   ems_charger_power_max: !input ems_charger_power_max
 
-trigger:
-  - platform: time_pattern
+triggers:
+  - trigger: time_pattern
     minutes: /10
-condition:
+conditions:
   - condition: state
     entity_id: !input ems_enabled
     state: "on"
-action:
+actions:
   - action: calendar.get_events
     target:
       entity_id: !input ems_calendar

@@ -39,17 +39,17 @@ variables:
   ems_charger_id: !input ems_charger_id
   ems_charging_type: !input ems_charging_type
 
-trigger:
-  - platform: time_pattern
+triggers:
+  - trigger: time_pattern
     seconds: /5
-condition:
+conditions:
   - condition: state
     entity_id: !input ems_enabled
     state: "on"
   - condition: state
     entity_id: !input ems_charging_type
     state: Surplus
-action:
+actions:
   - variables:
       powerAvailable: >-
         {{ states(ems_surplus_potential_power_mean) | int(0) }}

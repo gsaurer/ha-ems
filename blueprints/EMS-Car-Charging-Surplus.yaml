@@ -109,17 +109,17 @@ variables:
   ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
   ems_surplus_max_power_from_grid: !input ems_surplus_max_power_from_grid
   ems_surplus_min_power_available: !input ems_surplus_min_power_available
-trigger:
-  - platform: time_pattern
+triggers:
+  - trigger: time_pattern
     seconds: /5
-condition:
+conditions:
   - condition: state
     entity_id: !input ems_enabled
     state: "on"
   - condition: state
     entity_id: !input ems_charging_type
     state: Surplus
-action:
+actions:
   - variables:
       minCurrentToCharge: "{{ 6 }}"
       maxCurrentToCharge: "{{ 16 }}"
