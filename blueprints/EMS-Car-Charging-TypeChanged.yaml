@@ -175,33 +175,33 @@ action:
             entity_id: !input ems_charging_type
             state: Default
         sequence:
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Default
             target:
               entity_id: !input ems_charger_logic_mode
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Neutral
             target:
               entity_id: !input ems_charger_forced_state
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Auto
             target:
               entity_id: !input ems_charger_phases
             alias: Set charging phases to Auto
-          - service: number.set_value
+          - action: number.set_value
             metadata: {}
             data:
               value: "{{ ems_charger_current_default }}"
             target:
               entity_id: !input ems_charger_current
             alias: Set Current
-          - service: number.set_value
+          - action: number.set_value
             continue_on_error: true
             metadata: {}
             data:
@@ -213,33 +213,33 @@ action:
             entity_id: !input ems_charging_type
             state: Surplus
         sequence:
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Default
             target:
               entity_id: !input ems_charger_logic_mode
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Neutral
             target:
               entity_id: !input ems_charger_forced_state
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Force single phase
             target:
               entity_id: !input ems_charger_phases
             alias: Set charging phases to Auto
-          - service: number.set_value
+          - action: number.set_value
             metadata: {}
             data:
               value: "{{ ems_charger_current_surplus }}"
             target:
               entity_id: !input ems_charger_current
             alias: Set Current
-          - service: number.set_value
+          - action: number.set_value
             continue_on_error: true
             metadata: {}
             data:
@@ -251,33 +251,33 @@ action:
             entity_id: !input ems_charging_type
             state: Trip
         sequence:
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Default
             target:
               entity_id: !input ems_charger_logic_mode
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Neutral
             target:
               entity_id: !input ems_charger_forced_state
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Auto
             target:
               entity_id: !input ems_charger_phases
             alias: Set charging phases to Auto
-          - service: number.set_value
+          - action: number.set_value
             metadata: {}
             data:
               value: "{{ ems_charger_current_trip }}"
             target:
               entity_id: !input ems_charger_current
             alias: Set Current
-          - service: number.set_value
+          - action: number.set_value
             continue_on_error: true
             metadata: {}
             data:
@@ -289,33 +289,33 @@ action:
             entity_id: !input ems_charging_type
             state: Morning-Min
         sequence:
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Default
             target:
               entity_id: !input ems_charger_logic_mode
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Neutral
             target:
               entity_id: !input ems_charger_forced_state
-          - service: select.select_option
+          - action: select.select_option
             metadata: {}
             data:
               option: Auto
             target:
               entity_id: !input ems_charger_phases
             alias: Set charging phases to Auto
-          - service: number.set_value
+          - action: number.set_value
             metadata: {}
             data:
               value: "{{ ems_charger_current_trip }}"
             target:
               entity_id: !input ems_charger_current
             alias: Set Current
-          - service: number.set_value
+          - action: number.set_value
             continue_on_error: true
             metadata: {}
             data:

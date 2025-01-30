@@ -115,7 +115,7 @@ condition:
     entity_id: !input ems_enabled
     state: "on"
 action:
-  - service: calendar.get_events
+  - action: calendar.get_events
     target:
       entity_id: !input ems_calendar
     data:
@@ -145,7 +145,7 @@ action:
                 timeToStart: >-
                   {{ repeat.item['start']|as_datetime - timedelta( minutes =
                   minToFinish+15) }}
-            - service: input_datetime.set_datetime
+            - action: input_datetime.set_datetime
               target:
                 entity_id: !input ems_calendar_nextstart_datetime
               data:
@@ -160,7 +160,7 @@ action:
                   value_template: "{{ tripDateTime|as_datetime < now() + ems_calendar_change_battery_max_before_trip|as_timedelta }}"
                   alias: Check if Trip is starting in less the time configured for surplus
               then:
-                - service: number.set_value
+                - action: number.set_value
                   continue_on_error: true
                   metadata: {}
                   data:
@@ -182,13 +182,13 @@ action:
                   value_template: >-
                     {{ timeToStart|as_datetime < now() + ems_calendar_ready_before_trip|as_timedelta }}
               then:
-                - service: input_select.select_option
+                - action: input_select.select_option
                   metadata: {}
                   data:
                     option: Trip
                   target:
                     entity_id: !input ems_charging_type                  
-                - service: notify.signal_me
+                - action: notify.signal_me
                   data:
                     title: "[EMS] - Trip - Charging"
                     message: >-

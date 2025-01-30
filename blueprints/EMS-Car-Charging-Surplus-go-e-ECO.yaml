@@ -55,7 +55,7 @@ action:
         {{ states(ems_surplus_potential_power_mean) | int(0) }}
       mqtt_go_echarger_topic: >-
         {{ 'go-eCharger/%s/ids/set' % ems_charger_id }}
-  - service: mqtt.publish
+  - action: mqtt.publish
     data:
       qos: "0"
       retain: false

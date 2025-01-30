@@ -140,7 +140,7 @@ action:
           = 10) }}"
         alias: Check if time to start is right
     then:
-      - service: input_select.select_option
+      - action: input_select.select_option
         metadata: {}
         data:
           option: Morning-Min
@@ -155,7 +155,7 @@ action:
       - condition: template
         value_template: "{{ chargingPercentMissing <= 0 }}"
     then:
-      - service: input_select.select_option
+      - action: input_select.select_option
         metadata: {}
         data:
           option: Surplus
