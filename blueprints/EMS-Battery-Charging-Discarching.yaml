@@ -1,5 +1,5 @@
 blueprint:
-  name: "[EMS] - [Battery] - Charging & discharging automation"
+  name: "[EMS] - [Battery] - [Charging automation] - Marstek"
   description: This sends the values for battery charging and discharging to Maerstek E.
   domain: automation
   source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS-Battery-Charging-Discarching.yaml
