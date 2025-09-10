@@ -27,14 +27,6 @@ blueprint:
           filter:
             domain: select
 
-    ems_battery_expected_power:
-      name: Battery Expected Power
-      description: This defines the expected power level of the battery - Potential values of this entity are (Low, Medium, High). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
-      selector:
-        entity:
-          filter:
-            domain: number
-
     ems_battery_charging_enabled:
       name: Battery charging enabled
       description: This defines if the battery charging is enabled or not.
@@ -43,6 +35,14 @@ blueprint:
           filter:
             domain: switch
 
+    ems_battery_expected_power:
+      name: Battery Expected Power
+      description: This defines the expected power level of the battery - Potential values of this entity are (Low, Medium, High). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: number
+    
     ems_battery_state_of_charge:
       name: Battery state of charger
       description: This defines the current state of charge of the battery - Potential values of this entity are (Low, Medium, High). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
