@@ -1,0 +1,161 @@
+blueprint:
+  name: "[EMS] - [Battery] - Charging & discharging automation"
+  description: This sends the values for battery charging and discharging to Maerstek E.
+  domain: automation
+  source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS-Battery-Charging-Discarching.yaml
+  input:
+    #general settings
+    ems_enabled:
+      name: EMS - Enabled
+      description: Switch that defines if the Energy Managment system should be turned on. It's the main switch for your EMS systm. If you don't have one create a new one directly in the blueprint. Turning it off this will disable this automation.
+      selector:
+        entity:
+          domain: input_boolean
+    ems_charging_type:
+      name: Charging type
+      description: This defines which type of charging should be used - Potential values of this entity are (Default, Surplus, Trip, Stop). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: input_select
+
+    ems_battery_working_mode:
+      name: Battery Working mode
+      description: This defines which type of battery working mode should be used - Potential values of this entity are (Default, Surplus, Trip, Stop). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: input_select
+
+    ems_battery_expected_power:
+      name: Battery Expected Power
+      description: This defines the expected power level of the battery - Potential values of this entity are (Low, Medium, High). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: number
+    
+    ems_battery_state_of_charge:
+      name: Battery state of charger
+      description: This defines the current state of charge of the battery - Potential values of this entity are (Low, Medium, High). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: sensor
+
+    ems_battery_charging_enabled:
+      name: Battery charging enabled
+      description: This defines if the battery charging is enabled or not.
+      selector:
+        entity:
+          filter:
+            domain: switch
+
+    ems_solar_power_now:
+      name: Solar power now
+      description: This defines the current solar power generation - Potential values of this entity are (Low, Medium, High). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: sensor
+    
+    ems_grid_power_now:
+      name: Grid power now
+      description: This defines the current grid power consumption - Potential values of this entity are (Low, Medium, High). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: sensor
+    
+    ems_battery_power_now:
+      name: Battery power now
+      description: This defines the current battery power consumption - Potential values of this entity are (Low, Medium, High). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      selector:
+        entity:
+          filter:
+            domain: sensor
+    
+variables:
+  ems_battery_power_now: !input ems_battery_power_now
+  ems_grid_power_now: !input ems_grid_power_now
+triggers:
+  - trigger: time_pattern
+    seconds: "5"
+conditions:
+  - condition: state
+    entity_id: !input ems_enabled
+    state: "on"
+  - condition: state
+    entity_id: !input ems_battery_working_mode
+    state: Manual
+actions:
+  - alias: Make sure charging is enabled
+    if:
+      - condition: state
+        entity_id: !input ems_battery_charging_enabled
+        state: "off"
+    then:
+      - service: switch.turn_on
+        data: {}
+        target:
+          entity_id: "{{ ems_battery_charging_enabled }}"
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input ems_charging_type
+            state: Trip
+          - condition: numeric_state
+            entity_id: !input ems_battery_expected_power
+            above: 0
+        sequence:
+          - service: number.set_value
+            target:
+              entity_id: !input ems_battery_expected_power
+            data:
+              value: 0
+        alias: "[Car] - Trip charging has priority"
+      - conditions:
+          - condition: numeric_state
+            entity_id: !input ems_battery_state_of_charge
+            above: 5
+          - condition: numeric_state
+            entity_id: !input ems_solar_power_now
+            below: 200
+        sequence:
+          - action: number.set_value
+            metadata: {}
+            data:
+              value: >-
+                {{min(2500, max(0,
+                states(ems_battery_power_now)|int(0)
+                + states(ems_grid_power_now)|int(0)))}}
+            target:
+              entity_id: !input ems_battery_expected_power
+        alias: "[Battery] - Discharge"
+      - conditions:
+          - condition: numeric_state
+            entity_id: !input ems_battery_state_of_charge
+            below: 100
+          - condition: numeric_state
+            entity_id: !input ems_solar_power_now
+            above: 200
+        sequence:
+          - action: number.set_value
+            metadata: {}
+            data:
+              value: >-
+                {{max(-2500, -max(0,
+                states(ems_battery_power_now)|int(0) -
+                states(ems_grid_power_now)|int(0)))}}
+            target:
+              entity_id:
+                - !input ems_battery_expected_power
+        alias: "[Battery] - Charge"
+    default:
+      - service: number.set_value
+        target:
+          entity_id: !input ems_battery_expected_power
+        data:
+          value: 0
+mode: single
+
