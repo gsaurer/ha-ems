@@ -146,7 +146,7 @@ actions:
               value: >-
                 {{max(-2500, -max(0,
                 states(ems_battery_power_now)|int(0) -
-                states(ems_grid_power_now)|int(0)))}}
+                states(ems_grid_power_now)|int(0)*-1))}}
             target:
               entity_id:
                 - !input ems_battery_expected_power
