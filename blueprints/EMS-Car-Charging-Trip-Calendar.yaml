@@ -1,19 +1,19 @@
 blueprint:
   name: "[EMS] - [Car] - [Charging automation] - [Trip] - Calendar entry"
-  description: This script works in conjunction with the other automations. It checks the calendar for entries with a specific value and based on that set's the charging to a trip to make sure a certain battery % is reached. 
+  description: This script works in conjunction with the other automations. It checks the calendar for entries with a specific value and based on that set's the charging to a trip to make sure a certa[...]
   domain: automation
   source_url: https://raw.githubusercontent.com/gsaurer/ha-ems/main/blueprints/EMS-Car-Charging-Trip-Calendar.yaml
   input:
     #general settings
     ems_enabled:
       name: EMS - Enabled
-      description: Switch that defines if the Energy Managment system should be turned on. It's the main switch for your EMS systm. If you don't have one create a new one directly in the blueprint. Turning it off this will disable this automation.
+      description: Switch that defines if the Energy Managment system should be turned on. It's the main switch for your EMS systm. If you don't have one create a new one directly in the blueprint. Tu[...]
       selector:
         entity:
           domain: input_boolean
     ems_charging_type:
       name: Charging type
-      description: This defines which type of charging should be used - Potential values of this entity are (Default, Surplus, Trip, Stop). If you don't have this entity create it directly in the blueprint and add it to your it to your dashboard to select what charging type you want.
+      description: This defines which type of charging should be used - Potential values of this entity are (Default, Surplus, Trip, Stop). If you don't have this entity create it directly in the blue[...]
       selector:
         entity:
           filter:
@@ -27,6 +27,14 @@ blueprint:
           - domain:
             - input_number
           multiple: false
+
+    #notifications
+    ems_notify_service:
+      name: Notification service
+      description: Notify service to send EMS trip charging messages to (e.g. notify.mobile_app_phone, notify.signal_me)
+      default: notify.notify
+      selector:
+        notify:
 
     #calendar settings
     ems_calendar:
@@ -106,6 +114,7 @@ variables:
   ems_car_battery_percentage_trip: !input ems_car_battery_percentage_trip
   ems_car_battery_power_max: !input ems_car_battery_power_max
   ems_charger_power_max: !input ems_charger_power_max
+  ems_notify_service: !input ems_notify_service
 
 triggers:
   - trigger: time_pattern
@@ -188,7 +197,7 @@ actions:
                     option: Trip
                   target:
                     entity_id: !input ems_charging_type                  
-                - action: notify.signal_me
+                - service: "{{ ems_notify_service }}"
                   data:
                     title: "[EMS] - Trip - Charging"
                     message: >-
