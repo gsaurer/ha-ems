@@ -34,7 +34,7 @@ blueprint:
       description: Notify service to send EMS trip charging messages to (e.g. notify.mobile_app_phone, notify.signal_me)
       default: notify.notify
       selector:
-        notify:
+        text:
 
     #calendar settings
     ems_calendar:
