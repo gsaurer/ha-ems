@@ -34,10 +34,26 @@ blueprint:
       selector:
         entity:
           domain: sensor
+    ems_home_battery_power:
+      name: Home Battery - Power (optional)
+      description: >
+        Optional. The current power flow of the home battery in watts.
+        Positive values mean the battery is charging, negative values mean it
+        is discharging. When provided, the value is forwarded as pAkku in the
+        go-e ECO payload so the charger correctly accounts for battery state
+        and does not drain it when there is no solar production.
+      default: {}
+      selector:
+        entity:
+          filter:
+            - domain:
+                - sensor
+          multiple: false
 variables:
   ems_surplus_potential_power_mean: !input ems_surplus_potential_power_mean
   ems_charger_id: !input ems_charger_id
   ems_charging_type: !input ems_charging_type
+  ems_home_battery_power: !input ems_home_battery_power
 
 triggers:
   - trigger: time_pattern
@@ -55,12 +71,18 @@ actions:
         {{ states(ems_surplus_potential_power_mean) | int(0) }}
       mqtt_go_echarger_topic: >-
         {{ 'go-eCharger/%s/ids/set' % ems_charger_id }}
+      batteryPower: >-
+        {% if ems_home_battery_power is not mapping %}
+          {{ states(ems_home_battery_power) | int(0) }}
+        {% else %}
+          {{ 0 }}
+        {% endif %}
   - action: mqtt.publish
     data:
       qos: "0"
       retain: false
       topic: "{{mqtt_go_echarger_topic}}"
       payload: >-
-        {"pGrid": {{powerAvailable * -1}}, "pPv": {{(int(0))}}, "pAkku": {{(int(0))}}}
+        {"pGrid": {{powerAvailable * -1}}, "pPv": {{(int(0))}}, "pAkku": {{batteryPower}}}
     alias: Send mqtt pGrid information
 mode: single
